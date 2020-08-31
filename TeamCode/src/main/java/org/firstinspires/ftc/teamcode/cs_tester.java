@@ -1,0 +1,45 @@
+package org.firstinspires.ftc.teamcode;
+
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.ColorSensor;
+
+@TeleOp(name = "cs_recorder", group = "proto")
+public class cs_tester extends LinearOpMode {
+
+    // the base cs
+    ColorSensor cs;
+
+    @Override
+    public void runOpMode() throws InterruptedException {
+        // 'connects' the cs to it's hardware counterpart
+        cs = hardwareMap.get(ColorSensor.class, "cs");
+
+        // applies the wrapper class
+        updatedCS ucs = new updatedCS(cs);
+
+        //waits for start
+        waitForStart();
+
+        //Tell the user that the program is ready to start and that they can press the start button
+        //Telemetry data is added that notifies the user amd the telemetry is refreshed to show changed
+        telemetry.addData(null, "Press the start button"); //Added for #4
+        telemetry.update();
+
+        // as long as the a button is not pressed, it will record data
+        while(opModeIsActive()){
+            if(!gamepad1.a == true){
+                ucs.recordValues(); // record data
+                sleep(250); // pause in data recording
+
+                //Tell the user that a button has been pressed by refreshing the telemetry
+                telemetry.addData(null, "You can stop pressing \"A\""); //Added for #4
+                telemetry.update();
+            }
+
+            ucs.saveData(); // writes the data to the file
+            sleep(5000); // provides time to ensure everything happens (in case the file write happens async)
+            requestOpModeStop(); // opMode is told to stop
+        }
+    }
+}
