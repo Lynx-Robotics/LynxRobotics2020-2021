@@ -1,12 +1,14 @@
 package org.firstinspires.ftc.teamcode.synchro;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import java.util.ArrayList;
 
 // Complete Fallow Listener (Synchronous)
+@TeleOp(name = "Fallow-Listener", group = "Fallow")
 class complete_listener_synch extends LinearOpMode implements Gamepad.GamepadCallback {
 
     // Abstract BTN Class used for setting buttons we will monitor
