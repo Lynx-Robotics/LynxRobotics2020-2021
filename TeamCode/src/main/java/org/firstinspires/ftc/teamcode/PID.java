@@ -1,7 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
 
-class PID {
+abstract class PID {
     // Declare the values for the PID Controller
     private double kP; // Proportional Tuner
     private double kD; // Derivative Tuner
@@ -85,8 +85,5 @@ class PID {
     }
 
     // Method used to calculate error in a system - can be changed to fit different scenarios
-    public double calculateError(){
-        return -1;
-    }
-
+    abstract public double calculateError();
 }
