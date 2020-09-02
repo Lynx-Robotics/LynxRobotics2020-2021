@@ -1,13 +1,15 @@
 package org.firstinspires.ftc.teamcode;
 
-abstract class PID_v2 {
+import com.qualcomm.robotcore.util.ElapsedTime;
+
+abstract class PD {
 
     // Variables
     private double kP, kD;
     private double last_error;
 
     // PID Constructor
-    public PID_v2(double kP, double kD){
+    public PD(double kP, double kD){ // IMPLEMENT: Elapsedtime needs to be implemented in parameter
         this.kD = kD;
         this.kP = kP;
     }
