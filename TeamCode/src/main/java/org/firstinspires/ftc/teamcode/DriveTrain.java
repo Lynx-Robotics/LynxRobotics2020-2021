@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode.*;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -18,15 +19,22 @@ class DriveTrain {
     // Declares Modular Variables (Variables that can change depending on DriveTrain Type)
     private boolean reverse_motors = true;
     private boolean active = false;
-    private int DRIVE;
+    private int DRIVE, WHEEL;
+    private double STRAFE_POWER;
 
     // Declares FallowBundle Variables
     private ControllerBundle inputBundle;
     private Port TLPort, TRPort, BLPort, BRPort;
 
     // Drive Methods
-    public int VECTOR_DRIVE = 001;
-    public int TANK_DRIVE = 002;
+    final public int VECTOR_DRIVE = 001;
+    final public int TANK_DRIVE = 002;
+
+    // Wheel Types
+    final public int MECANUM = 003;
+    final public int GHOST = 004;
+
+
 
     public DriveTrain(HardwareMap ahwMap){
         // Gets Hardware Info
@@ -98,6 +106,42 @@ class DriveTrain {
         }
     }
 
+    // inverts the direction of certain wheels
+    public void invertWheels(DcMotor[] motors){
+        for (DcMotor motor : motors) {
+            motor.setDirection(DcMotorSimple.Direction.REVERSE);
+        }
+    }
+
+    // Resets the encoder position motor
+    public void resetEncoders(DcMotor motor){
+        motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+    }
+
+    // Resets all encoders for the drivetrain
+    public void resetAllEncoders(){
+        resetEncoders(TL);
+        resetEncoders(TR);
+        resetEncoders(BL);
+        resetEncoders(BR);
+    }
+
+    public void wheelType(int WHEEL_TYPE){
+        this.WHEEL = WHEEL_TYPE;
+    }
+
+    // Sets the Zero Power Behavior for each wheel (can be set individually)
+    public void setZeroPowerBehavior(DcMotor.ZeroPowerBehavior zph){
+        TL.setZeroPowerBehavior(zph);
+        TR.setZeroPowerBehavior(zph);
+        BL.setZeroPowerBehavior(zph);
+        BR.setZeroPowerBehavior(zph);
+    }
+
+    public void setStrafeVoltage(double speed){
+        this.STRAFE_POWER = speed;
+    }
+
     // safety must be turned off so that button inputs can be registered by the drivetrain
     public void safetyOff(){
         active = true;
@@ -105,15 +149,41 @@ class DriveTrain {
 
     // uses port data to send power to motors
     public void drive(){
-        switch (DRIVE){
-            case 001:
-                while(active){
-                    TL.setPower((Double) TLPort.getPortData());
-                    TR.setPower((Double) TRPort.getPortData());
-                    BL.setPower((Double) BLPort.getPortData());
-                    BR.setPower((Double) BRPort.getPortData());
+        // If TankDrive with Mecanum Wheels
+        if((DRIVE == TANK_DRIVE) && (WHEEL == MECANUM)){
+            while(active){
+                TL.setPower((Double) TLPort.getPortData());
+                TR.setPower((Double) TRPort.getPortData());
+                BL.setPower((Double) BLPort.getPortData());
+                BR.setPower((Double) BRPort.getPortData());
+
+                if(inputBundle.xBtnPort.getPortData()){
+                    TL.setPower(-STRAFE_POWER);
+                    TR.setPower(STRAFE_POWER);
+                    BL.setPower(STRAFE_POWER);
+                    BR.setPower(-STRAFE_POWER);
                 }
-                break;
+                if(inputBundle.bBtnPort.getPortData()){
+                    TL.setPower(STRAFE_POWER);
+                    TR.setPower(-STRAFE_POWER);
+                    BL.setPower(-STRAFE_POWER);
+                    BR.setPower(STRAFE_POWER);
+                }
+            }
+            return;
+        }
+    }
+
+    public void drive(int num){
+        // If TankDrive with Mecanum Wheels
+        if((DRIVE == TANK_DRIVE) && (WHEEL == MECANUM)){
+            while(active){
+                TL.setPower(inputBundle.lsYPort.getPortData());
+                TR.setPower(inputBundle.rsYPort.getPortData());
+                BL.setPower(inputBundle.lsYPort.getPortData());
+                BR.setPower(inputBundle.rsYPort.getPortData());;
+            }
+            return;
         }
     }
 

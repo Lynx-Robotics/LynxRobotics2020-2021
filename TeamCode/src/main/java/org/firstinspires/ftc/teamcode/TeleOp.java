@@ -20,7 +20,7 @@ abstract class TeleOp extends LinearOpMode {
         @Override
         public void run() {
             chart.dt.safetyOff();
-            chart.dt.drive();
+            chart.dt.drive(1);
         }
     }
 
