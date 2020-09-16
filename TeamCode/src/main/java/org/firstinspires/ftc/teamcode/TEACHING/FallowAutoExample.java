@@ -16,11 +16,13 @@ LeftStickY, 1.4323949743
 @Autonomous(name = "SomethingRandomSoWeCanSeeItOnPhone", group = "FallowAuto")
 //@Disabled
 class FallowAutoExample extends LinearOpMode {
-
-    HardwareChart chart;
+    HardwareChart chart = new HardwareChart();
 
     @Override
     public void runOpMode() throws InterruptedException {
-        chart.period.milliseconds();
+        chart.period.reset();
+
+        waitForStart();
+        if(chart.period.milliseconds() == time){aBtn.press(); lsy.set();}
     }
 }
