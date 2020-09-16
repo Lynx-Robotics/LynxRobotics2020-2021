@@ -1,19 +1,17 @@
 package org.firstinspires.ftc.teamcode;
 
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode.*;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
-import org.firstinspires.ftc.robotcore.internal.android.dex.util.ExceptionWithContext;
+import org.firstinspires.ftc.teamcode.ControllerBundle;
+import org.firstinspires.ftc.teamcode.Port;
+import org.firstinspires.ftc.teamcode.hardware.extension.FallowDcMotor;
 
-
-class DriveTrain {
-
+class DriveTrainV2 {
     // Declares Motors for DriveTrain
-    public DcMotor TL, TR, BL, BR;
+    public DcMotor TL_, TR_, BL_, BR_;
+    public FallowDcMotor TL, TR, BL, BR;
 
 
     // Declares Modular Variables (Variables that can change depending on DriveTrain Type)
@@ -36,57 +34,33 @@ class DriveTrain {
 
 
 
-    public DriveTrain(HardwareMap ahwMap){
+    public DriveTrainV2(HardwareMap ahwMap){
         // Gets Hardware Info
         this.init(ahwMap);
 
         // Sets the Motor Direction
         setMotorDir();
-
-        // associate ports with default connection
-        associateTLPort("left_stick_y");
-        associateTRPort("right_stick_y");
-        associateBLPort("left_stick_y");
-        associateBRPort("right_stick_y");
-
     }
 
     // Declares the actual motor location using the hardware map
     public void init(HardwareMap ahwMap){
-        TL = ahwMap.get(DcMotor.class, "TL");
-        TR = ahwMap.get(DcMotor.class, "TR");
-        BL = ahwMap.get(DcMotor.class, "BL");
-        BR = ahwMap.get(DcMotor.class, "BR");
+        TL_ = ahwMap.get(DcMotor.class, "TL");
+        TR_ = ahwMap.get(DcMotor.class, "TR");
+        BL_ = ahwMap.get(DcMotor.class, "BL");
+        BR_ = ahwMap.get(DcMotor.class, "BR");
+
+        TL = new FallowDcMotor(TL_, inputBundle.lsYPort);
+        TR = new FallowDcMotor(TR_, inputBundle.rsYPort);
+        BL = new FallowDcMotor(BL_, inputBundle.lsYPort);
+        BR = new FallowDcMotor(BR_, inputBundle.rsYPort);
     }
 
     // Reverses the TR and BR motors (required on most default designs, but can be turned off)
     private void setMotorDir(){
         if(reverse_motors){
-            TR.setDirection(DcMotorSimple.Direction.REVERSE);
-            BR.setDirection(DcMotorSimple.Direction.REVERSE);
+            TR_.setDirection(DcMotorSimple.Direction.REVERSE);
+            BR_.setDirection(DcMotorSimple.Direction.REVERSE);
         }
-    }
-
-    // Associates the ports for each of the motors on the DriveTrain (e.g, TL should only respond
-    // to data from the left_stick_y port).
-    public void associateTLPort(String portName){
-        Port port = inputBundle.getPortByName(portName);
-        TLPort = port;
-    }
-
-    public void associateTRPort(String portName){
-        Port port = inputBundle.getPortByName(portName);
-        TRPort = port;
-    }
-
-    public void associateBLPort(String portName){
-        Port port = inputBundle.getPortByName(portName);
-        BLPort = port;
-    }
-
-    public void associateBRPort(String portName){
-        Port port = inputBundle.getPortByName(portName);
-        BRPort = port;
     }
 
     // Sets the Controller Bundle for the DriveTrain
@@ -114,8 +88,8 @@ class DriveTrain {
     }
 
     // Resets the encoder position motor
-    public void resetEncoders(DcMotor motor){
-        motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+    public void resetEncoders(FallowDcMotor motor){
+        motor.motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
     }
 
     // Resets all encoders for the drivetrain
@@ -132,10 +106,10 @@ class DriveTrain {
 
     // Sets the Zero Power Behavior for each wheel (can be set individually)
     public void setZeroPowerBehavior(DcMotor.ZeroPowerBehavior zph){
-        TL.setZeroPowerBehavior(zph);
-        TR.setZeroPowerBehavior(zph);
-        BL.setZeroPowerBehavior(zph);
-        BR.setZeroPowerBehavior(zph);
+        TL.motor.setZeroPowerBehavior(zph);
+        TR.motor.setZeroPowerBehavior(zph);
+        BL.motor.setZeroPowerBehavior(zph);
+        BR.motor.setZeroPowerBehavior(zph);
     }
 
     public void setStrafeVoltage(double speed){
@@ -152,10 +126,11 @@ class DriveTrain {
         // If TankDrive with Mecanum Wheels
         if((DRIVE == TANK_DRIVE) && (WHEEL == MECANUM)){
             while(active){
-                TL.setPower((Double) TLPort.getPortData());
-                TR.setPower((Double) TRPort.getPortData());
-                BL.setPower((Double) BLPort.getPortData());
-                BR.setPower((Double) BRPort.getPortData());
+                // Activate motor will begin listening to the port and assign values as needed
+                TL.activateMotor();
+                TR.activateMotor();
+                BL.activateMotor();
+                BR.activateMotor();
 
                 if(inputBundle.xBtnPort.getPortData()){
                     TL.setPower(-STRAFE_POWER);
@@ -170,25 +145,6 @@ class DriveTrain {
                     BR.setPower(STRAFE_POWER);
                 }
             }
-            return;
-        }
-    }
-
-    public void method(){
-        Port name = inputBundle.getPortByName("aBtn");
-        name.getPortData();
-    }
-
-    public void drive(int num){
-        // If TankDrive with Mecanum Wheels
-        if((DRIVE == TANK_DRIVE) && (WHEEL == MECANUM)){
-            while(active){
-                TL.setPower(inputBundle.lsYPort.getPortData());
-                TR.setPower(inputBundle.rsYPort.getPortData());
-                BL.setPower(inputBundle.lsYPort.getPortData());
-                BR.setPower(inputBundle.rsYPort.getPortData());;
-            }
-            return;
         }
     }
 
@@ -196,6 +152,7 @@ class DriveTrain {
     public void activateTankDrive(){
         this.DRIVE = this.TANK_DRIVE;
     }
+
     public void activateVectorDrive(){
         this.DRIVE = this.VECTOR_DRIVE;
     }

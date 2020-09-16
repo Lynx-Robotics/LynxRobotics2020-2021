@@ -1,6 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
-class Port<T>{
+public class Port<T>{
     // portName is used as a non-numeric ID
     public String portName;
 

@@ -4,13 +4,13 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-class HardwareChart {
+public class HardwareChart {
     /* Global OpMode Memebrs */
     public DriveTrain dt;
 
     /* Local Opmode Members */
     HardwareMap hwMap = null;
-    private ElapsedTime period = new ElapsedTime();
+    public ElapsedTime period = new ElapsedTime();
 
     // Default Contructor
     public HardwareChart(){
