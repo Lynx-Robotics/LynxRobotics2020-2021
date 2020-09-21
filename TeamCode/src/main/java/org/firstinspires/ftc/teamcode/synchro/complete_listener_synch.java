@@ -9,7 +9,7 @@ import java.util.ArrayList;
 
 // Complete Fallow Listener (Synchronous)
 @TeleOp(name = "Fallow-Listener", group = "Fallow")
-class complete_listener_synch extends LinearOpMode implements Gamepad.GamepadCallback {
+public class complete_listener_synch extends LinearOpMode implements Gamepad.GamepadCallback {
 
     // Abstract BTN Class used for setting buttons we will monitor
     abstract class BTN<T>{
